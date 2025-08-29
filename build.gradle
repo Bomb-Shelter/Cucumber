@@ -65,25 +65,37 @@ dependencies {
     }
 }
 
+
 publishing {
     publications {
-        maven(MavenPublication) {
-            artifact jar
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+
+            artifact(slimJar) {
+                classifier = "slim"
+            }
+
+            artifact(tasks.jar) {
+                classifier = "all"
+            }
         }
     }
-
     repositories {
-        maven {
-            url = 'https://maven.blakesmods.com'
+        if (System.getenv().MAVEN_USER != null && !System.getenv().MAVEN_USER.isBlank()) {
+            project.logger.lifecycle("Adding maven from secrets")
 
-            credentials {
-                username = System.getenv('BLAKESMODS_MAVEN_USERNAME')
-                password = System.getenv('BLAKESMODS_MAVEN_PASSWORD')
+            maven {
+                credentials {
+                    username = System.getenv().MAVEN_USER
+                    password = System.getenv().MAVEN_PASS
+                }
+                url = "https://mvn.devos.one/snapshots"
             }
+        }
 
-            authentication {
-                basic(BasicAuthentication)
-            }
+        if (project.hasProperty('mavendir')) {
+            maven { url = mavendir }
         }
     }
 }
