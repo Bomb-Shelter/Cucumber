@@ -4,6 +4,8 @@ import com.blakebr0.cucumber.Cucumber;
 import com.blakebr0.cucumber.crafting.ShapelessCraftingInput;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.core.util.INBTSerializable;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
@@ -12,15 +14,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
-import net.neoforged.neoforge.common.util.DataComponentUtil;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class BaseItemStackHandler extends ItemStackHandler {
+public class BaseItemStackHandler extends ItemStackHandler implements INBTSerializable<CompoundTag> {
     // copy of ItemStack#CODEC that removes the stupid int range limit on count
     private static final Codec<ItemStack> ITEM_STACK_CODEC = Codec.lazyInitialized(() -> RecordCodecBuilder.create(builder ->
             builder.group(
@@ -43,34 +43,34 @@ public class BaseItemStackHandler extends ItemStackHandler {
         this.slotSizeMap = new HashMap<>();
     }
 
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        return this.insertItem(slot, stack, simulate, false);
-    }
-
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate, boolean container) {
-        if (!container && this.outputSlots != null && ArrayUtils.contains(this.outputSlots, slot))
-            return stack;
-
-        return super.insertItem(slot, stack, simulate);
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        return this.extractItem(slot, amount, simulate, false);
-    }
-
-    public ItemStack extractItem(int slot, int amount, boolean simulate, boolean container) {
-        if (!container) {
-            if (this.canExtract != null && !this.canExtract.apply(slot))
-                return ItemStack.EMPTY;
-
-            if (this.outputSlots != null && !ArrayUtils.contains(this.outputSlots, slot))
-                return ItemStack.EMPTY;
-        }
-
-        return super.extractItem(slot, amount, simulate);
-    }
+//    @Override
+//    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+//        return this.insertItem(slot, stack, simulate, false);
+//    }
+//
+//    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate, boolean container) {
+//        if (!container && this.outputSlots != null && ArrayUtils.contains(this.outputSlots, slot))
+//            return stack;
+//
+//        return super.insertItem(slot, stack, simulate);
+//    }
+//
+//    @Override
+//    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+//        return this.extractItem(slot, amount, simulate, false);
+//    }
+//
+//    public ItemStack extractItem(int slot, int amount, boolean simulate, boolean container) {
+//        if (!container) {
+//            if (this.canExtract != null && !this.canExtract.apply(slot))
+//                return ItemStack.EMPTY;
+//
+//            if (this.outputSlots != null && !ArrayUtils.contains(this.outputSlots, slot))
+//                return ItemStack.EMPTY;
+//        }
+//
+//        return super.extractItem(slot, amount, simulate);
+//    }
 
     @Override
     public int getSlotLimit(int slot) {
@@ -78,13 +78,8 @@ public class BaseItemStackHandler extends ItemStackHandler {
     }
 
     @Override
-    public int getStackLimit(int slot, ItemStack stack) {
-        return super.getStackLimit(slot, stack);
-    }
-
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack) {
-        return this.canInsert == null || this.canInsert.apply(slot, stack);
+    public boolean isItemValid(int slot, ItemVariant stack, int amount) {
+        return this.canInsert == null || this.canInsert.apply(slot, stack, amount);
     }
 
     @Override
@@ -103,7 +98,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
             if (!stack.isEmpty()) {
                 var item = new CompoundTag();
                 item.putInt("Slot", i);
-                items.add(DataComponentUtil.wrapEncodingExceptions(stack, ITEM_STACK_CODEC, lookup, item));
+                items.add(ITEM_STACK_CODEC.encode(stack, lookup.createSerializationContext(NbtOps.INSTANCE), item).getOrThrow());
             }
         }
 
@@ -236,7 +231,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
      * @return the copy of this BaseItemStackHandler
      */
     public BaseItemStackHandler copy() {
-        var newInventory = new BaseItemStackHandler(this.getSlots(), this.onContentsChanged);
+        var newInventory = new BaseItemStackHandler(this.getSlotCount(), this.onContentsChanged);
 
         newInventory.setDefaultSlotLimit(this.maxStackSize);
         newInventory.setCanInsert(this.canInsert);
@@ -245,7 +240,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
 
         this.slotSizeMap.forEach(newInventory::addSlotLimit);
 
-        for (int i = 0; i < this.getSlots(); i++) {
+        for (int i = 0; i < this.getSlotCount(); i++) {
             var stack = this.getStackInSlot(i);
 
             newInventory.setStackInSlot(i, stack.copy());

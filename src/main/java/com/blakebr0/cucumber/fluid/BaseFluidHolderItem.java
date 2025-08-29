@@ -1,43 +1,47 @@
 package com.blakebr0.cucumber.fluid;
 
 import com.blakebr0.cucumber.iface.IFluidHolder;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 
-public class BaseFluidHolderItem extends FluidTank implements IFluidHandlerItem {
+public class BaseFluidHolderItem implements SingleSlotStorage<FluidVariant> {
     private final IFluidHolder holder;
-    private final ItemStack stack;
+    private final ContainerItemContext context;
 
-    public BaseFluidHolderItem(ItemStack stack, IFluidHolder holder) {
-        super(holder.getCapacity(stack));
-        this.stack = stack;
+    public BaseFluidHolderItem(ContainerItemContext context, IFluidHolder holder) {
+        this.context = context;
         this.holder = holder;
     }
 
     @Override
-    public ItemStack getContainer() {
-        return this.stack;
+    public long getCapacity() {
+        return holder.getCapacity(context);
     }
 
     @Override
-    public FluidStack getFluid() {
-        return this.holder.getFluid(this.stack);
+    public long insert(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        return this.holder.fill(this.context, resource, maxAmount, transaction) ;
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        return this.holder.fill(this.stack, resource, action.execute());
+    public long extract(FluidVariant resource, long maxAmount, TransactionContext transaction) {
+        return this.holder.drain(this.context, maxAmount, transaction).getAmount();
     }
 
     @Override
-    public FluidStack drain(FluidStack resource, FluidAction action) {
-        return this.drain(resource.getAmount(), action);
+    public boolean isResourceBlank() {
+        return this.holder.isResourceBlank(this.context);
     }
 
     @Override
-    public FluidStack drain(int maxDrain, FluidAction action) {
-        return this.holder.drain(this.stack, maxDrain, action.execute());
+    public FluidVariant getResource() {
+        return holder.getResource(this.context);
+    }
+
+    @Override
+    public long getAmount() {
+        return this.holder.getAmount(this.context);
     }
 }

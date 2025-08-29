@@ -1,19 +1,19 @@
 package com.blakebr0.cucumber.energy;
 
 public class DynamicEnergyStorage extends BaseEnergyStorage {
-    private final int initialCapacity;
+    private final long initialCapacity;
 
-    public DynamicEnergyStorage(int capacity, Runnable onContentsChanged) {
+    public DynamicEnergyStorage(long capacity, Runnable onContentsChanged) {
         super(capacity, onContentsChanged);
         this.initialCapacity = capacity;
     }
 
-    public void setMaxEnergyStorage(int capacity) {
+    public void setMaxEnergyStorage(long capacity) {
         this.capacity = capacity;
     }
 
     public void setMaxEnergyStorage(double capacity) {
-        this.capacity = (int) capacity;
+        this.capacity = (long) capacity;
     }
 
     public void resetMaxEnergyStorage() {

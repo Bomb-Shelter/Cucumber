@@ -63,9 +63,9 @@ public class ShapelessTagRecipe extends ShapelessRecipe {
                                             if (ingredients.length == 0) {
                                                 return DataResult.error(() -> "No ingredients for shapeless recipe");
                                             } else {
-                                                return ingredients.length > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
-                                                        ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
-                                                        : DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
+//                                                return ingredients.length > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
+//                                                        ? DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: %s".formatted(ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
+                                                        return DataResult.success(NonNullList.of(Ingredient.EMPTY, ingredients));
                                             }
                                         },
                                         DataResult::success

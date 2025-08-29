@@ -1,7 +1,9 @@
 package com.blakebr0.cucumber.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomExpBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
@@ -15,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Function;
 
-public class BaseOreBlock extends BaseBlock {
+public class BaseOreBlock extends BaseBlock implements CustomExpBlock {
     private final IntProvider xpRange;
 
     public BaseOreBlock(Function<Properties, Properties> properties, int minExp, int maxExp) {
@@ -30,7 +32,7 @@ public class BaseOreBlock extends BaseBlock {
     @Override
     public int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, BlockEntity blockEntity, Entity breaker, ItemStack tool) {
         var hasSilkTouch = tool.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY)
-                .getLevel(level.registryAccess().holderOrThrow(Enchantments.SILK_TOUCH)) > 0;
+                .getLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH)) > 0;
         return hasSilkTouch ? 0 : this.xpRange.sample(level.getRandom());
     }
 }

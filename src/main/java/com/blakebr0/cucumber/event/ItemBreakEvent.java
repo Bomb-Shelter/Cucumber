@@ -1,13 +1,20 @@
 package com.blakebr0.cucumber.event;
 
+import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
-public class ItemBreakEvent extends Event {
+public class ItemBreakEvent extends BaseEvent {
+    public static final Event<ItemBreakEvent.Callback> EVENT = EventFactory.createArrayBacked(ItemBreakEvent.Callback.class, callbacks -> event -> {
+        for (var callback : callbacks) {
+            callback.onItemBreak(event);
+        }
+    });
     private final ItemStack stack;
     private final int amount;
     private final ServerLevel level;
@@ -41,5 +48,14 @@ public class ItemBreakEvent extends Event {
 
     public LivingEntity getEntity() {
         return this.entity;
+    }
+
+    @Override
+    public void sendEvent() {
+        EVENT.invoker().onItemBreak(this);
+    }
+
+    interface Callback {
+        void onItemBreak(ItemBreakEvent event);
     }
 }

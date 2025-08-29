@@ -1,6 +1,7 @@
 package com.blakebr0.cucumber.item.tool;
 
 import com.blakebr0.cucumber.iface.ICustomBow;
+import io.github.fabricators_of_create.porting_lib.item.extensions.CustomArrowItem;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundSource;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.function.Function;
 
-public class BaseCrossbowItem extends CrossbowItem implements ICustomBow {
+public class BaseCrossbowItem extends CrossbowItem implements ICustomBow, CustomArrowItem {
     public BaseCrossbowItem(Function<Properties, Properties> properties) {
         super(properties.apply(new Properties()));
     }

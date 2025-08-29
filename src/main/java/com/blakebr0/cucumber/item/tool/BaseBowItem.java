@@ -1,6 +1,7 @@
 package com.blakebr0.cucumber.item.tool;
 
 import com.blakebr0.cucumber.iface.ICustomBow;
+import io.github.fabricators_of_create.porting_lib.item.extensions.CustomArrowItem;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -12,12 +13,11 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.EventHooks;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class BaseBowItem extends BowItem implements ICustomBow {
+public class BaseBowItem extends BowItem implements ICustomBow, CustomArrowItem {
     public BaseBowItem(Function<Properties, Properties> properties) {
         super(properties.apply(new Properties()));
     }
@@ -29,7 +29,7 @@ public class BaseBowItem extends BowItem implements ICustomBow {
 
             // change: account for draw speed multiplier
             int i = (int) ((this.getUseDuration(stack, entity) - timeLeft) * this.getDrawSpeedMulti(stack));
-            i = EventHooks.onArrowLoose(stack, level, player, i, !itemstack.isEmpty());
+//            i = EventHooks.onArrowLoose(stack, level, player, i, !itemstack.isEmpty());
             if (i < 0) return;
 
             float f = getPowerForTime(i);

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.blakebr0.cucumber.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CropBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+

@@ -1,6 +1,9 @@
 package com.blakebr0.cucumber.item.tool;
 
 import com.blakebr0.cucumber.lib.ModTags;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbility;
+import io.github.fabricators_of_create.porting_lib.tool.addons.ItemAbilityItem;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -13,13 +16,11 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
 
 import java.util.Optional;
 import java.util.function.Function;
 
-public class BasePaxelItem extends DiggerItem {
+public class BasePaxelItem extends DiggerItem implements ItemAbilityItem {
     public BasePaxelItem(Tier tier) {
         this(tier, p -> p);
     }

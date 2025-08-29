@@ -1,6 +1,10 @@
 package com.blakebr0.cucumber.helper;
 
+import com.blakebr0.cucumber.Cucumber;
 import com.blakebr0.cucumber.tileentity.BaseInventoryTileEntity;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.HarvestableBlock;
+import io.github.fabricators_of_create.porting_lib.level.LevelHooks;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +18,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
 
 public final class BlockHelper {
@@ -56,7 +59,7 @@ public final class BlockHelper {
         var type = player.gameMode.getGameModeForPlayer();
         var state = level.getBlockState(pos);
 
-        var event = CommonHooks.fireBlockBreak(level, type, player, pos, state);
+        var event = LevelHooks.fireBlockBreak(level, type, player, pos, state);
         if (event.isCanceled())
             return false;
 
@@ -73,13 +76,13 @@ public final class BlockHelper {
             return true;
 
         var block = state.getBlock();
-        if (destroyed && state.canHarvestBlock(level, pos, player)) {
+        if (destroyed && Cucumber.canHarvestBlock(state, level, pos, player)) {
             block.playerDestroy(level, player, pos, state, level.getBlockEntity(pos), stack);
             stack.mineBlock(level, state, pos, player);
         }
 
         var tile = level.getBlockEntity(pos);
-        var exp = state.getExpDrop(level, pos, tile, player, stack);
+        var exp = LevelHooks.getExpDrop(state, level, pos, tile, player, stack);
 
         if (destroyed && exp > 0) {
             block.popExperience(player.serverLevel(), pos, exp);
@@ -98,8 +101,8 @@ public final class BlockHelper {
     }
 
     public static boolean destroyBlock(BlockState state, Level level, Player player, BlockPos pos) {
-        var canHarvest = !player.isCreative() && state.canHarvestBlock(level, pos, player);
-        var destroyed = state.onDestroyedByPlayer(level, pos, player, canHarvest, level.getFluidState(pos));
+        var canHarvest = !player.isCreative() && Cucumber.canHarvestBlock(state, level, pos, player);
+        var destroyed = state.port_lib$onDestroyedByPlayer(level, pos, player, canHarvest, level.getFluidState(pos));
 
         if (destroyed) {
             state.getBlock().destroy(level, pos, state);
@@ -116,14 +119,14 @@ public final class BlockHelper {
             var inventory = tile.getInventory();
             float f = 0.0F;
 
-            for (int i = 0; i < inventory.getSlots(); ++i) {
+            for (int i = 0; i < inventory.getSlotCount(); ++i) {
                 var stack = inventory.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    f += (float) stack.getCount() / (float) inventory.getStackLimit(i, stack);
+                    f += (float) stack.getCount() / (float) inventory.getStackLimit(i, ItemVariant.of(stack), stack.getCount());
                 }
             }
 
-            f /= (float) inventory.getSlots();
+            f /= (float) inventory.getSlotCount();
             return Mth.lerpDiscrete(f, 0, 15);
         }
 

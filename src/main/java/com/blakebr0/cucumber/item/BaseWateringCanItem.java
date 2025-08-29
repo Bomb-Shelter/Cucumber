@@ -4,6 +4,8 @@ import com.blakebr0.cucumber.init.ModDataComponentTypes;
 import com.blakebr0.cucumber.lib.Tooltips;
 import com.blakebr0.cucumber.util.Utils;
 import com.blakebr0.cucumber.util.WateringCanUtil;
+import io.github.fabricators_of_create.porting_lib.item.extensions.UseFirstBehaviorItem;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,12 +27,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.util.FakePlayer;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class BaseWateringCanItem extends BaseItem {
+public class BaseWateringCanItem extends BaseItem implements UseFirstBehaviorItem {
     protected final int range;
     protected final double chance;
 
@@ -39,7 +40,7 @@ public class BaseWateringCanItem extends BaseItem {
     }
 
     public BaseWateringCanItem(int range, double chance, Function<Properties, Properties> properties) {
-        super(properties.compose(p -> p.stacksTo(1).component(ModDataComponentTypes.WATERING_CAN_FILLED, false)));
+        super(properties.compose(p -> p.stacksTo(1).component(ModDataComponentTypes.WATERING_CAN_FILLED.get(), false)));
         this.range = range;
         this.chance = chance;
     }
@@ -143,11 +144,11 @@ public class BaseWateringCanItem extends BaseItem {
     }
 
     public static boolean isFilled(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponentTypes.WATERING_CAN_FILLED, false);
+        return stack.getOrDefault(ModDataComponentTypes.WATERING_CAN_FILLED.get(), false);
     }
 
     public static void setFilled(ItemStack stack, boolean filled) {
-        stack.set(ModDataComponentTypes.WATERING_CAN_FILLED, filled);
+        stack.set(ModDataComponentTypes.WATERING_CAN_FILLED.get(), filled);
     }
 
     protected InteractionResult doWater(ItemStack stack, Level level, Player player, BlockPos pos, Direction direction) {

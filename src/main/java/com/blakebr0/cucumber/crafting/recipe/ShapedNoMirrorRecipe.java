@@ -25,8 +25,8 @@ public class ShapedNoMirrorRecipe extends ShapedRecipe {
 
     @Override
     public boolean matches(CraftingInput inventory, Level level) {
-        for (int i = 0; i <= inventory.width() - this.pattern.width(); i++) {
-            for (int j = 0; j <= inventory.height() - this.pattern.height(); j++) {
+        for (int i = 0; i <= inventory.width() - getWidth(); i++) {
+            for (int j = 0; j <= inventory.height() - getHeight(); j++) {
                 if (this.checkMatch(inventory, i, j)) {
                     return true;
                 }
@@ -48,8 +48,8 @@ public class ShapedNoMirrorRecipe extends ShapedRecipe {
                 var l = j - y;
                 var ingredient = Ingredient.EMPTY;
 
-                if (k >= 0 && l >= 0 && k < this.pattern.width() && l < this.pattern.height()) {
-                    ingredient = this.getIngredients().get(k + l * this.pattern.width());
+                if (k >= 0 && l >= 0 && k < getWidth() && l < getHeight()) {
+                    ingredient = this.getIngredients().get(k + l * getWidth());
                 }
 
                 if (!ingredient.test(inventory.getItem(i + j * inventory.width()))) {

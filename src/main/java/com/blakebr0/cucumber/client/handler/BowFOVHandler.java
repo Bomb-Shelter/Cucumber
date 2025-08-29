@@ -1,13 +1,11 @@
 package com.blakebr0.cucumber.client.handler;
 
 import com.blakebr0.cucumber.iface.ICustomBow;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.ComputeFovModifierEvent;
 import net.minecraft.util.Mth;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 
 public final class BowFOVHandler {
-	@SubscribeEvent
-	public void onFOVUpdate(ComputeFovModifierEvent event) {
+	public static void onFOVUpdate(ComputeFovModifierEvent event) {
 		var entity = event.getPlayer();
 		var stack = entity.getUseItem();
 

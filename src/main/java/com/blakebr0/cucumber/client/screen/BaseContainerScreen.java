@@ -37,8 +37,8 @@ public abstract class BaseContainerScreen<T extends AbstractContainerMenu> exten
 
     @Override
     protected void renderBg(GuiGraphics gfx, float partialTicks, int mouseX, int mouseY) {
-        int x = this.getGuiLeft();
-        int y = this.getGuiTop();
+        int x = this.leftPos;
+        int y = this.topPos;
 
         gfx.blit(this.bgTexture, x, y, 0, 0, this.imageWidth, this.imageHeight, this.bgImgWidth, this.bgImgHeight);
     }

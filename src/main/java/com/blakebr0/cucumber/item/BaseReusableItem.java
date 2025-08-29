@@ -1,12 +1,12 @@
 package com.blakebr0.cucumber.item;
 
 import com.blakebr0.cucumber.lib.Tooltips;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
 import java.util.function.Function;
@@ -34,24 +34,19 @@ public class BaseReusableItem extends BaseItem {
 	}
 
 	public BaseReusableItem(int uses, boolean tooltip, Function<Properties, Properties> properties) {
-		super(properties.compose(p -> p.durability(Math.max(uses - 1, 0)).setNoRepair()));
+		super(properties.compose(p -> p.durability(Math.max(uses - 1, 0)).port_lib$setNoRepair()));
 		this.damage = uses > 0;
 		this.tooltip = tooltip;
 	}
 	
 	@Override
-	public boolean hasCraftingRemainingItem(ItemStack stack) {
-		return true;
-	}
-	
-	@Override
-	public ItemStack getCraftingRemainingItem(ItemStack stack) {
+	public ItemStack getRecipeRemainder(ItemStack stack) {
 		var copy = stack.copyWithCount(1);
 
 		if (!this.damage)
 			return copy;
 
-		var unbreaking = stack.getEnchantmentLevel(UNBREAKING_ENCHANTMENT);
+		var unbreaking = stack.getEnchantments().getLevel(UNBREAKING_ENCHANTMENT);
 		if (Math.random() > (1.0F / (unbreaking + 1)))
 			return copy;
 

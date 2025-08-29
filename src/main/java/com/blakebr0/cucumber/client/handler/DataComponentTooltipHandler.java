@@ -8,20 +8,20 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.List;
 
 public final class DataComponentTooltipHandler {
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onItemTooltip(ItemTooltipEvent event) {
+    public static void onItemTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) {
         if (!ModConfigs.ENABLE_DATA_COMPONENT_TOOLTIPS.get())
             return;
 
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            var stack = event.getItemStack();
             var components = stack.getComponents();
-            var tooltip = event.getToolTip();
+            var tooltip = lines;
 
             if (Screen.hasAltDown()) {
                 tooltip.add(Tooltips.DATA_COMPONENTS.build());

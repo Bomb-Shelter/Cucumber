@@ -6,23 +6,22 @@ import com.blakebr0.cucumber.util.Localizable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.List;
 
 public final class TagTooltipHandler {
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onItemTooltip(ItemTooltipEvent event) {
+    public static void onItemTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipFlag tooltipType, List<Component> lines) {
         if (!ModConfigs.ENABLE_TAG_TOOLTIPS.get())
             return;
 
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            var stack = event.getItemStack();
             var block = Block.byItem(stack.getItem());
 
             var blockTags = block == Blocks.AIR ? List.of() : block.defaultBlockState().getTags()
@@ -33,7 +32,7 @@ public final class TagTooltipHandler {
                     .toList();
 
             if (!blockTags.isEmpty() || !itemTags.isEmpty()) {
-                var tooltip = event.getToolTip();
+                var tooltip = lines;
 
                 if (Screen.hasControlDown()) {
                     if (!blockTags.isEmpty()) {

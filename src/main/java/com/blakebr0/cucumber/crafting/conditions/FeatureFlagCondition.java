@@ -3,8 +3,8 @@ package com.blakebr0.cucumber.crafting.conditions;
 import com.blakebr0.cucumber.util.FeatureFlag;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.resources.conditions.ICondition;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public record FeatureFlagCondition(ResourceLocation flag) implements ICondition {
     public static final MapCodec<FeatureFlagCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->

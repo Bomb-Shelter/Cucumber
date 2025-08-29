@@ -1,34 +1,37 @@
 package com.blakebr0.cucumber.crafting.ingredient;
 
+import com.blakebr0.cucumber.Cucumber;
 import com.blakebr0.cucumber.init.ModIngredientTypes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.resources.crafting.PortingLibIngredients;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-public class IngredientWithCount implements ICustomIngredient, Predicate<ItemStack> {
+public class IngredientWithCount implements CustomIngredient, Predicate<ItemStack> {
     public static final IngredientWithCount EMPTY = new IngredientWithCount(new Ingredient.ItemValue(ItemStack.EMPTY), 0);
     public static final MapCodec<IngredientWithCount> MAP_CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
-                    Ingredient.Value.MAP_CODEC.xmap(v -> new Ingredient.Value[] { v }, v -> v[0]).forGetter(ingredient -> ingredient.values),
+                    PortingLibIngredients.VALUE_MAP_CODEC.xmap(v -> new Ingredient.Value[] { v }, v -> v[0]).forGetter(ingredient -> ingredient.values),
                     Codec.INT.fieldOf("count").forGetter(ingredient -> ingredient.count)
             ).apply(builder, IngredientWithCount::new)
     );
     public static final Codec<IngredientWithCount> CODEC = MAP_CODEC.codec();
     public static final StreamCodec<RegistryFriendlyByteBuf, IngredientWithCount> STREAM_CODEC = StreamCodec.of(
             (buffer, ingredient) -> {
-                var items = ingredient.getItems().toList();
+                var items = ingredient.getMatchingStacks();
 
                 buffer.writeVarInt(items.size());
 
@@ -79,22 +82,22 @@ public class IngredientWithCount implements ICustomIngredient, Predicate<ItemSta
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
+    public List<ItemStack> getMatchingStacks() {
         if (this.stacks == null) {
             this.stacks = Arrays.stream(this.values).flatMap(v -> v.getItems().stream()).toArray(ItemStack[]::new);
         }
 
-        return Stream.of(this.stacks);
+        return List.of(this.stacks);
     }
 
     @Override
-    public boolean isSimple() {
-        return false;
+    public boolean requiresTesting() {
+        return true;
     }
 
     @Override
-    public IngredientType<?> getType() {
-        return ModIngredientTypes.WITH_COUNT.get();
+    public CustomIngredientSerializer<?> getSerializer() {
+        return ModIngredientTypes.WITH_COUNT;
     }
 
     public int getCount() {
@@ -103,5 +106,24 @@ public class IngredientWithCount implements ICustomIngredient, Predicate<ItemSta
 
     public static Ingredient of(ItemStack item, int count) {
         return new IngredientWithCount(new Ingredient.ItemValue(item), count).toVanilla();
+    }
+
+    public static class Serializer implements CustomIngredientSerializer<IngredientWithCount> {
+        public static final ResourceLocation ID = Cucumber.resource("with_count");
+
+        @Override
+        public ResourceLocation getIdentifier() {
+            return ID;
+        }
+
+        @Override
+        public MapCodec<IngredientWithCount> getCodec(boolean allowEmpty) {
+            return MAP_CODEC;
+        }
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, IngredientWithCount> getPacketCodec() {
+            return STREAM_CODEC;
+        }
     }
 }

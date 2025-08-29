@@ -2,16 +2,15 @@ package com.blakebr0.cucumber.client.extensions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.client_extensions.IClientItemExtensions;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class WateringCanClientItemExtensions implements IClientItemExtensions {
     public static final IClientItemExtensions INSTANCE = new WateringCanClientItemExtensions();
 
-    @Override
     public boolean applyForgeHandTransform(PoseStack matrix, LocalPlayer player, HumanoidArm arm, ItemStack stack, float partialTick, float equipProcess, float swingProcess) {
         if (player.isUsingItem() && player.getUseItemRemainingTicks() > 0) {
             float f = (float) (player.getUseItemRemainingTicks() % 20);

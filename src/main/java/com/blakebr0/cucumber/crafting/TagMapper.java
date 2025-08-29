@@ -8,15 +8,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.fabricators_of_create.porting_lib.resources.events.TagsUpdatedEvent;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -31,20 +32,19 @@ public class TagMapper {
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
     private static final Map<String, String> TAG_TO_ITEM_MAP = new HashMap<>();
 
-    @SubscribeEvent
-    public void onTagsUpdated(TagsUpdatedEvent event) {
+    public static void onTagsUpdated(TagsUpdatedEvent event) {
         if (event.shouldUpdateStaticData())
             reloadTagMappings();
     }
 
     public static void reloadTagMappings() {
         var stopwatch = Stopwatch.createStarted();
-        var dir = FMLPaths.CONFIGDIR.get().toFile();
+        var dir = FabricLoader.getInstance().getConfigDir().toFile();
 
         TAG_TO_ITEM_MAP.clear();
 
         if (dir.exists() && dir.isDirectory()) {
-            var file = FMLPaths.CONFIGDIR.get().resolve("cucumber-tags.json").toFile();
+            var file = FabricLoader.getInstance().getConfigDir().resolve("cucumber-tags.json").toFile();
 
             if (file.exists() && file.isFile()) {
                 JsonObject json;
@@ -105,7 +105,7 @@ public class TagMapper {
             var id = TAG_TO_ITEM_MAP.get(tagId);
             return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
         } else {
-            var file = FMLPaths.CONFIGDIR.get().resolve("cucumber-tags.json").toFile();
+            var file = FabricLoader.getInstance().getConfigDir().resolve("cucumber-tags.json").toFile();
             if (!file.exists()) {
                 generateNewConfig(file);
             }
@@ -153,7 +153,7 @@ public class TagMapper {
 
     private static Item addTagToFile(String tagId, JsonObject json, File file, boolean save) {
         var mods = ModConfigs.MOD_TAG_PRIORITIES.get();
-        var key = ItemTags.create(ResourceLocation.parse(tagId));
+        var key = TagKey.create(Registries.ITEM, ResourceLocation.parse(tagId));
 
         var item = BuiltInRegistries.ITEM.getTag(key).stream().filter(t -> t.size() > 0).min((item1, item2) -> {
             var id1 = BuiltInRegistries.ITEM.getKey(item1.get(0).value());
@@ -166,7 +166,7 @@ public class TagMapper {
         }).map(v -> v.get(0).value()).orElse(Items.AIR);
 
         var itemId = "null";
-        if (item != Items.AIR && BuiltInRegistries.ITEM.containsValue(item)) {
+        if (item != Items.AIR /*&& BuiltInRegistries.ITEM.containsValue(item)*/) {
             itemId = BuiltInRegistries.ITEM.getKey(item).toString();
         }
 

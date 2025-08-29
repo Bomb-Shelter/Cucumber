@@ -1,40 +1,46 @@
 package com.blakebr0.cucumber.helper;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public final class FluidHelper {
 	public static FluidStack getFluidFromStack(ItemStack stack) {
-		var handler = stack.getCapability(Capabilities.FluidHandler.ITEM);
-		return handler == null ? FluidStack.EMPTY : handler.getFluidInTank(0);
+		var handler = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
+		return handler == null ? FluidStack.EMPTY : new FluidStack(StorageUtil.findExtractableContent(handler, null));
 	}
 
-	public static int getFluidAmount(ItemStack stack) {
+	public static long getFluidAmount(ItemStack stack) {
 		var fluid = getFluidFromStack(stack);
 		return fluid == null ? 0 : fluid.getAmount();
 	}
 
-	public static ItemStack getFilledBucket(FluidStack fluid, Item bucket, int capacity) {
-		if (BuiltInRegistries.FLUID.containsValue(fluid.getFluid())) {
-			var filledBucket = new ItemStack(bucket);
-			var fluidContents = fluid.copyWithAmount(capacity);
+	public static ItemStack getFilledBucket(FluidStack fluid, Item bucket, int capacity, ContainerItemContext context) {
+		var filledBucket = new ItemStack(bucket);
+		var fluidContents = fluid.copyWithAmount(capacity);
 
-			var tank = filledBucket.getCapability(Capabilities.FluidHandler.ITEM);
-			if (tank != null) {
-				tank.fill(fluidContents, IFluidHandler.FluidAction.EXECUTE);
+		var tank = FluidStorage.ITEM.find(filledBucket, context);
+		if (tank != null) {
+			try (Transaction tx = Transaction.openOuter()) {
+				tank.insert(fluidContents.getVariant(), fluidContents.getAmount(), tx);
+				tx.commit();
 			}
-
-			return filledBucket;
 		}
 
-		return ItemStack.EMPTY;
+		return filledBucket;
 	}
 
-	public static int toBuckets(int i) {
+	@Deprecated(forRemoval = true)
+	public static long toBuckets(long i) {
 		return i - (i % 1000);
+	}
+
+	public static long toDroplets(long i) {
+		return i - (i % FluidConstants.BUCKET);
 	}
 }

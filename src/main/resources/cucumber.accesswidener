@@ -1,0 +1,13 @@
+accessWidener v2 named
+
+accessible field net/minecraft/world/item/crafting/ShapedRecipePattern data Ljava/util/Optional;
+accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
+accessible method net/minecraft/world/item/crafting/ShapedRecipePattern unpack (Lnet/minecraft/world/item/crafting/ShapedRecipePattern$Data;)Lcom/mojang/serialization/DataResult;
+accessible method net/minecraft/world/item/crafting/CraftingInput <init> (IILjava/util/List;)V
+accessible method net/minecraft/world/item/crafting/RecipeManager byType (Lnet/minecraft/world/item/crafting/RecipeType;)Ljava/util/Collection;
+accessible field net/minecraft/world/item/CrossbowItem midLoadSoundPlayed Z
+accessible field net/minecraft/world/item/CrossbowItem startSoundPlayed Z
+accessible method net/minecraft/world/item/CrossbowItem getPowerForTime (ILnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)F
+accessible method net/minecraft/world/item/CrossbowItem tryLoadProjectiles (Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;)Z
+accessible method net/minecraft/world/item/CrossbowItem getChargingSounds (Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/CrossbowItem$ChargingSounds;
+accessible method net/minecraft/world/level/block/Block popExperience (Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;I)V

@@ -1,14 +1,23 @@
 package com.blakebr0.cucumber.iface;
 
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public interface IFluidHolder {
-	int getCapacity(ItemStack stack);
+	int getCapacity(ContainerItemContext context);
 
-	FluidStack getFluid(ItemStack stack);
+	boolean isResourceBlank(ContainerItemContext context);
 
-	int fill(ItemStack stack, FluidStack fluid, boolean canFill);
+	FluidVariant getResource(ContainerItemContext context);
 
-	FluidStack drain(ItemStack stack, int amount, boolean canDrain);
+	long getAmount(ContainerItemContext context);
+
+	FluidStack getFluid(ContainerItemContext context);
+
+	int fill(ContainerItemContext context, FluidVariant fluid, long amount, TransactionContext tx);
+
+	FluidStack drain(ContainerItemContext context, long amount, TransactionContext tx);
 }

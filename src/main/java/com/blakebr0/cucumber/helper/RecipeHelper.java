@@ -12,7 +12,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +65,7 @@ public final class RecipeHelper {
         var recipes = new ArrayList<RecipeHolder<?>>();
 
         try {
-            NeoForge.EVENT_BUS.post(new RecipeManagerLoadingEvent(manager, recipes));
+            new RecipeManagerLoadingEvent(manager, recipes).sendEvent();
         } catch (Exception e) {
             Cucumber.LOGGER.error("An error occurred while firing RecipeManagerLoadingEvent", e);
         }
@@ -82,7 +81,7 @@ public final class RecipeHelper {
     @ApiStatus.Internal
     public static void fireRecipeManagerLoadedEvent(RecipeManager manager) {
         try {
-            NeoForge.EVENT_BUS.post(new RecipeManagerLoadedEvent(manager));
+            new RecipeManagerLoadedEvent(manager).sendEvent();
         } catch (Exception e) {
             Cucumber.LOGGER.error("An error occurred while firing RecipeManagerLoadedEvent", e);
         }

@@ -11,52 +11,48 @@ import com.blakebr0.cucumber.init.ModDataComponentTypes;
 import com.blakebr0.cucumber.init.ModIngredientTypes;
 import com.blakebr0.cucumber.init.ModRecipeSerializers;
 import com.blakebr0.cucumber.init.ModSounds;
-import com.blakebr0.cucumber.util.FeatureFlagInitializer;
+//import com.blakebr0.cucumber.util.FeatureFlagInitializer;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.HarvestableBlock;
+import io.github.fabricators_of_create.porting_lib.config.ConfigRegistry;
+import io.github.fabricators_of_create.porting_lib.config.ModConfig;
+import io.github.fabricators_of_create.porting_lib.resources.events.TagsUpdatedEvent;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mod(Cucumber.MOD_ID)
-public final class Cucumber {
-	public static final String NAME = "Cucumber Library";
+public final class Cucumber implements ModInitializer {
+	public static final String NAME = "ClientCucumber Library";
 	public static final String MOD_ID = "cucumber";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
-	public Cucumber(IEventBus bus, ModContainer mod) {
-		bus.register(this);
+	public void onInitialize() {
+		ModDataComponentTypes.REGISTRY.register();
+		ModSounds.REGISTRY.register();
+		ModConditionSerializers.REGISTRY.register();
+		ModIngredientTypes.register();
+		ModRecipeSerializers.REGISTRY.register();
+		CommandRegistrationCallback.EVENT.register(ModCommands::onRegisterCommands);
+		TagsUpdatedEvent.EVENT.register(TagMapper::onTagsUpdated);
 
-		ModDataComponentTypes.REGISTRY.register(bus);
-		ModSounds.REGISTRY.register(bus);
-		ModConditionSerializers.REGISTRY.register(bus);
-		ModIngredientTypes.REGISTRY.register(bus);
-		ModRecipeSerializers.REGISTRY.register(bus);
+		//FeatureFlagInitializer.init();
 
-		FeatureFlagInitializer.init();
-
-		mod.registerConfig(ModConfig.Type.CLIENT, ModConfigs.CLIENT);
-		mod.registerConfig(ModConfig.Type.COMMON, ModConfigs.COMMON);
+		ConfigRegistry.registerConfig(MOD_ID, ModConfig.Type.CLIENT, ModConfigs.CLIENT);
+		ConfigRegistry.registerConfig(MOD_ID, ModConfig.Type.COMMON, ModConfigs.COMMON);
 	}
 
-	@SubscribeEvent
-	public void onCommonSetup(FMLCommonSetupEvent event) {
-		NeoForge.EVENT_BUS.register(new ModCommands());
-		NeoForge.EVENT_BUS.register(new TagMapper());
-	}
-
- 	@SubscribeEvent
-	public void onClientSetup(FMLClientSetupEvent event) {
-		NeoForge.EVENT_BUS.register(new BowFOVHandler());
-		NeoForge.EVENT_BUS.register(new TagTooltipHandler());
-		NeoForge.EVENT_BUS.register(new DataComponentTooltipHandler());
-	}
+    public static boolean canHarvestBlock(BlockState state, BlockGetter level, BlockPos pos, Player player) {
+        if (state.getBlock() instanceof HarvestableBlock harvestable) {
+            return harvestable.canHarvestBlock(state, level, pos, player);
+        } else {
+            return player.hasCorrectToolForDrops(state);
+        }
+    }
 
 	public static ResourceLocation resource(String path) {
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);

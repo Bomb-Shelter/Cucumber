@@ -1,20 +1,21 @@
 package com.blakebr0.cucumber.inventory;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class RecipeInventory implements Container {
-    private final IItemHandlerModifiable inventory;
+    private final SlottedStackStorage inventory;
     private final int start;
     private final int size;
 
-    public RecipeInventory(IItemHandlerModifiable inventory) {
-        this(inventory, 0, inventory.getSlots());
+    public RecipeInventory(SlottedStackStorage inventory) {
+        this(inventory, 0, inventory.getSlotCount());
     }
 
-    public RecipeInventory(IItemHandlerModifiable inventory, int start, int size) {
+    public RecipeInventory(SlottedStackStorage inventory, int start, int size) {
         this.inventory = inventory;
         this.start = start;
         this.size = size;
@@ -61,7 +62,7 @@ public class RecipeInventory implements Container {
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return this.inventory.isItemValid(slot + this.start, stack);
+        return this.inventory.isItemValid(slot + this.start, ItemVariant.of(stack), stack.getCount());
     }
 
     @Override

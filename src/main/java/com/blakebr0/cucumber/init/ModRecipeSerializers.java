@@ -6,10 +6,10 @@ import com.blakebr0.cucumber.crafting.recipe.ShapedTagRecipe;
 import com.blakebr0.cucumber.crafting.recipe.ShapedTransferComponentsRecipe;
 import com.blakebr0.cucumber.crafting.recipe.ShapedTransferDamageRecipe;
 import com.blakebr0.cucumber.crafting.recipe.ShapelessTagRecipe;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class ModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, Cucumber.MOD_ID);

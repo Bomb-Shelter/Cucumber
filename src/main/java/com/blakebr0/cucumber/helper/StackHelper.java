@@ -5,8 +5,9 @@ import net.minecraft.world.item.ItemStack;
 public final class StackHelper {
 	public static ItemStack withSize(ItemStack stack, int size, boolean container) {
 		if (size <= 0) {
-			if (container && stack.hasCraftingRemainingItem()) {
-				return stack.getCraftingRemainingItem();
+			var remainder = stack.getRecipeRemainder();
+			if (container && !remainder.isEmpty()) {
+				return remainder;
 			} else {
 				return ItemStack.EMPTY;
 			}
@@ -39,7 +40,7 @@ public final class StackHelper {
 		if (stack.isEmpty())
 			return ItemStack.EMPTY;
 
-		var remaining = stack.getCraftingRemainingItem();
+		var remaining = stack.getRecipeRemainder();
 		var result = shrink(stack, amount, false);
 
 		if (!remaining.isEmpty() && areStacksEqual(remaining, result)) {

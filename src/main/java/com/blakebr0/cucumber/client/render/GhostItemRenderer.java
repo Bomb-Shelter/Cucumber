@@ -25,68 +25,68 @@ import net.minecraft.world.level.block.StainedGlassPaneBlock;
 import org.joml.Matrix4f;
 
 public final class GhostItemRenderer {
-    public static void renderItemIntoGui(ItemStack stack, int x, int y, ItemRenderer itemRenderer) {
-        renderItemModelIntoGUI(stack, x, y, itemRenderer.getModel(stack, null, null, 0), itemRenderer);
-    }
-
-    /**
-     * Copied from ItemRenderer#render(ItemStack, ItemTransforms.TransformType, boolean, PoseStack, MultiBufferSource, int, int, BakedModel)
-     */
-    private static void renderItem(ItemStack itemStackIn, ItemDisplayContext transformTypeIn, boolean leftHand, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, ItemRenderer itemRenderer) {
-        if (!itemStackIn.isEmpty()) {
-            matrixStackIn.pushPose();
-            boolean flag = transformTypeIn == ItemDisplayContext.GUI || transformTypeIn == ItemDisplayContext.GROUND || transformTypeIn == ItemDisplayContext.FIXED;
-            if (flag) {
-                if (itemStackIn.is(Items.TRIDENT)) {
-                    // NOTE: constant is private
-                    modelIn = itemRenderer.getItemModelShaper().getModelManager().getModel(ModelResourceLocation.vanilla("trident", "#inventory"));
-                } else if (itemStackIn.is(Items.SPYGLASS)) {
-                    // NOTE: constant is private
-                    modelIn = itemRenderer.getItemModelShaper().getModelManager().getModel(ModelResourceLocation.vanilla("spyglass", "inventory"));
-                }
-            }
-
-            modelIn = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(matrixStackIn, modelIn, transformTypeIn, leftHand);
-            matrixStackIn.translate(-0.5F, -0.5F, -0.5F);
-            if (!modelIn.isCustomRenderer() && (!itemStackIn.is(Items.TRIDENT) || flag)) {
-                boolean flag1;
-                if (transformTypeIn != ItemDisplayContext.GUI && !transformTypeIn.firstPerson() && itemStackIn.getItem() instanceof BlockItem blockitem) {
-                    Block block = blockitem.getBlock();
-                    flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
-                } else {
-                    flag1 = true;
-                }
-
-                for (var model : modelIn.getRenderPasses(itemStackIn, flag1)) {
-                    for (var rendertype : model.getRenderTypes(itemStackIn, flag1)) {
-                        // CHANGE: use ghost render type for all layers
-                        rendertype = ModRenderTypes.GHOST;
-                        VertexConsumer vertexconsumer;
-                        if (hasAnimatedTexture(itemStackIn) && itemStackIn.hasFoil()) {
-                            PoseStack.Pose posestack$pose = matrixStackIn.last().copy();
-                            if (transformTypeIn == ItemDisplayContext.GUI) {
-                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.5F);
-                            } else if (transformTypeIn.firstPerson()) {
-                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.75F);
-                            }
-
-                            vertexconsumer = ItemRenderer.getCompassFoilBuffer(bufferIn, rendertype, posestack$pose);
-                        } else if (flag1) {
-                            vertexconsumer = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, itemStackIn.hasFoil());
-                        } else {
-                            vertexconsumer = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, itemStackIn.hasFoil());
-                        }
-
-                        itemRenderer.renderModelLists(model, itemStackIn, combinedLightIn, combinedOverlayIn, matrixStackIn, vertexconsumer);
-                    }
-                }
-            } else {
-                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemStackIn).getCustomRenderer().renderByItem(itemStackIn, transformTypeIn, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-            }
-
-            matrixStackIn.popPose();
-        }
-    }
+//    public static void renderItemIntoGui(ItemStack stack, int x, int y, ItemRenderer itemRenderer) {
+//        renderItemModelIntoGUI(stack, x, y, itemRenderer.getModel(stack, null, null, 0), itemRenderer);
+//    }
+//
+//    /**
+//     * Copied from ItemRenderer#render(ItemStack, ItemTransforms.TransformType, boolean, PoseStack, MultiBufferSource, int, int, BakedModel)
+//     */
+//    private static void renderItem(ItemStack itemStackIn, ItemDisplayContext transformTypeIn, boolean leftHand, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, ItemRenderer itemRenderer) {
+//        if (!itemStackIn.isEmpty()) {
+//            matrixStackIn.pushPose();
+//            boolean flag = transformTypeIn == ItemDisplayContext.GUI || transformTypeIn == ItemDisplayContext.GROUND || transformTypeIn == ItemDisplayContext.FIXED;
+//            if (flag) {
+//                if (itemStackIn.is(Items.TRIDENT)) {
+//                    // NOTE: constant is private
+//                    modelIn = itemRenderer.getItemModelShaper().getModelManager().getModel(ModelResourceLocation.vanilla("trident", "#inventory"));
+//                } else if (itemStackIn.is(Items.SPYGLASS)) {
+//                    // NOTE: constant is private
+//                    modelIn = itemRenderer.getItemModelShaper().getModelManager().getModel(ModelResourceLocation.vanilla("spyglass", "inventory"));
+//                }
+//            }
+//
+//            modelIn = net.neoforged.neoforge.client.ClientHooks.handleCameraTransforms(matrixStackIn, modelIn, transformTypeIn, leftHand);
+//            matrixStackIn.translate(-0.5F, -0.5F, -0.5F);
+//            if (!modelIn.isCustomRenderer() && (!itemStackIn.is(Items.TRIDENT) || flag)) {
+//                boolean flag1;
+//                if (transformTypeIn != ItemDisplayContext.GUI && !transformTypeIn.firstPerson() && itemStackIn.getItem() instanceof BlockItem blockitem) {
+//                    Block block = blockitem.getBlock();
+//                    flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
+//                } else {
+//                    flag1 = true;
+//                }
+//
+//                for (var model : modelIn.getRenderPasses(itemStackIn, flag1)) {
+//                    for (var rendertype : model.getRenderTypes(itemStackIn, flag1)) {
+//                        // CHANGE: use ghost render type for all layers
+//                        rendertype = ModRenderTypes.GHOST;
+//                        VertexConsumer vertexconsumer;
+//                        if (hasAnimatedTexture(itemStackIn) && itemStackIn.hasFoil()) {
+//                            PoseStack.Pose posestack$pose = matrixStackIn.last().copy();
+//                            if (transformTypeIn == ItemDisplayContext.GUI) {
+//                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.5F);
+//                            } else if (transformTypeIn.firstPerson()) {
+//                                MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.75F);
+//                            }
+//
+//                            vertexconsumer = ItemRenderer.getCompassFoilBuffer(bufferIn, rendertype, posestack$pose);
+//                        } else if (flag1) {
+//                            vertexconsumer = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, itemStackIn.hasFoil());
+//                        } else {
+//                            vertexconsumer = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, itemStackIn.hasFoil());
+//                        }
+//
+//                        itemRenderer.renderModelLists(model, itemStackIn, combinedLightIn, combinedOverlayIn, matrixStackIn, vertexconsumer);
+//                    }
+//                }
+//            } else {
+//                net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(itemStackIn).getCustomRenderer().renderByItem(itemStackIn, transformTypeIn, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
+//            }
+//
+//            matrixStackIn.popPose();
+//        }
+//    }
 
     /**
      * Copied from ItemRenderer#hasAnimatedTexture(ItemStack)
@@ -120,7 +120,8 @@ public final class GhostItemRenderer {
         }
 
         // CHANGE: use render function from this class
-        renderItem(stack, ItemDisplayContext.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel, itemRenderer);
+        itemRenderer.render(stack, ItemDisplayContext.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+//        renderItem(stack, ItemDisplayContext.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel, itemRenderer);
 
         multibuffersource$buffersource.endBatch();
         RenderSystem.enableDepthTest();

@@ -4,6 +4,8 @@ import com.blakebr0.cucumber.helper.RecipeHelper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.JsonElement;
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -26,8 +28,10 @@ public class RecipeManagerMixin {
      * <p>
      * Surely I'll come up with a better solution one day Clueless.
      */
+    @Definition(id = "builder", method = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;")
+    @Expression("? = builder()")
     @Inject(
-            at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/ImmutableMap;builder()Lcom/google/common/collect/ImmutableMap$Builder;", ordinal = 0),
+            at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER),
             method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V"
     )
     public void cucumber$apply(

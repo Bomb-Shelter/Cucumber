@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+    "id": "cucumber",
+    "version": "${mod_version}",
+    "name": "Cucumber Library",
+    "description": "A library of shared code that all of my mods depend on.",
+    "authors": [
+      "BlakeBr0"
+    ],
+    "contact": {
+      "homepage": "https://blakesmods.com/cucumber"
+    },
+  "mixins": [
+    "cucumber.mixins.json"
+  ],
+  "entrypoints": {
+    "main": [
+      "com.blakebr0.cucumber.Cucumber"
+    ],
+    "client": [
+      "com.blakebr0.cucumber.client.ClientCucumber"
+    ]
+  },
+  "license": "MIT",
+  "accessWidener": "cucumber.accesswidener"}
