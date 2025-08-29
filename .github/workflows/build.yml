@@ -1,0 +1,37 @@
+name: build
+on: [ push, workflow_dispatch ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [ 21 ]
+    runs-on: ubuntu-latest
+    env:
+      PUBLISH_SUFFIX: snapshots
+      MAVEN_USER: ${{ secrets.MAVEN_USER }}
+      MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
+      WEBHOOK: ${{ secrets.WEBHOOK }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./gradlew
+
+      - name: Build Cucumber & Publish
+        run: ./gradlew buildOrPublish
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cucumber Lib
+          path: build/libs/*

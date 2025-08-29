@@ -5,7 +5,9 @@
     "name": "Cucumber Library",
     "description": "A library of shared code that all of my mods depend on.",
     "authors": [
-      "BlakeBr0"
+      "BlakeBr0",
+      "AlphaMode",
+      "Cartrigger"
     ],
     "contact": {
       "homepage": "https://blakesmods.com/cucumber"
