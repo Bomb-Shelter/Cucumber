@@ -46,10 +46,9 @@ dependencies {
     include modApi("teamreborn:energy:${energy_version}")
     modCompileOnly "com.almostreliable.mods:almostunified-fabric:${almostunified_version}"
 
-        for (String module in porting_lib_modules.split(",")) {
-            modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:${porting_lib_version}+${minecraft_version}") {{
-                exclude group: 'com.github.Chocohead'
-            }
+    for (String module in porting_lib_modules.split(",")) {
+        modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:${porting_lib_version}+${minecraft_version}") {
+            exclude group: 'com.github.Chocohead'
         }
     }
 
@@ -71,10 +70,6 @@ publishing {
         register('mavenJava', MavenPublication) {
             artifactId base.archivesName.get()
             from components.java
-
-            artifact(tasks.jar) {
-                classifier = "all"
-            }
         }
     }
 

@@ -57,7 +57,7 @@ public class ScytheHarvestCropEvent extends BaseEvent {
         EVENT.invoker().onScytheHarvestCrop(this);
     }
 
-    interface Callback {
+    public interface Callback {
         void onScytheHarvestCrop(ScytheHarvestCropEvent event);
     }
 

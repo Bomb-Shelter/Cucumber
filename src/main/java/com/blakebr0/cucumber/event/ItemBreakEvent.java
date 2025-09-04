@@ -55,7 +55,7 @@ public class ItemBreakEvent extends BaseEvent {
         EVENT.invoker().onItemBreak(this);
     }
 
-    interface Callback {
+    public interface Callback {
         void onItemBreak(ItemBreakEvent event);
     }
 }

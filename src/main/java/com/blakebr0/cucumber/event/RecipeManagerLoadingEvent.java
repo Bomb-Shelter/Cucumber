@@ -35,7 +35,7 @@ public class RecipeManagerLoadingEvent extends BaseEvent {
         EVENT.invoker().onRecipeManagerLoading(this);
     }
 
-    interface Callback {
+    public interface Callback {
         void onRecipeManagerLoading(RecipeManagerLoadingEvent event);
     }
 
