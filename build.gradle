@@ -4,7 +4,7 @@ plugins {
     id 'fabric-loom' version '1.10-SNAPSHOT'
 }
 
-version = '1.21.1-8.0.14'
+version = '1.21.1-8.0.14.1'
 group = 'com.blakebr0.cucumber'
 
 base {
